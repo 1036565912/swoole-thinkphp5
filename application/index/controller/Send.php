@@ -3,7 +3,6 @@ namespace  app\index\controller;
 
 use app\common\lib\ali\Sms;
 use app\common\lib\Util;
-use think\Config;
 class Send{
 
     /**
@@ -21,23 +20,23 @@ class Send{
 
         //生成一个随机数
         $code = mt_rand(1000,9999);
+        //echo $code;
+        $data = [
+            'method' => 'smsSend',
+            'data'  => [
+                'phone_num' => $phone_num,
+                'code' => $code,
+            ]
+        ];
 
-        try{
-            $result = Sms::send($phone_num,$code);
-        }catch (\Exception $e){
-            return Util::jsonError(config('dict.status.error'),'阿里大鱼内部错误!');
-        }
-        if($result->Code === "OK"){
-
-            //存储在redis
-            //以后做成redis连接池
-            $redis = new \Swoole\Coroutine\Redis();
-            $redis->connect(config('redis.host'),config('redis.port'));
-            $redis->set(config('redis.prefix').$phone_num,$code,config('redis.lifeTime'));
-            return Util::jsonSuccess(config('dict.status.success'),'发送成功!');
-        }else{
-            return Util::jsonError(config('dict.status.error'),$result->Message);
-        }
+        //由于这里是对接第三方的接口，然后第三方的返回结果都是不可信，为了不影响用户的体验，这里我们需要投递一个异步任务去执行，主线程继续执行。
+        $_POST['http_server']->task($data);
+        //存储在redis
+        //以后做成redis连接池
+        $redis = new \Swoole\Coroutine\Redis();
+        $redis->connect(config('redis.host'),config('redis.port'));
+        $redis->setex(config('redis.prefix').$phone_num,config('redis.lifeTime'),$code);
+        return Util::jsonSuccess(config('dict.status.success'),'发送成功!');
 
     }
 }

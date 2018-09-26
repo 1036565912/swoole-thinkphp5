@@ -10,7 +10,8 @@
 return [
     'host' => '0.0.0.0',
     'port' => 6379,
-    'lifeTime' => 120, //两分钟
+    'lifeTime' => 600, //两分钟
     'prefix' => 'sms_',
+    'timeOut' => 5,
 
 ];

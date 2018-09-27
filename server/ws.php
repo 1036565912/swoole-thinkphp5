@@ -1,23 +1,26 @@
 <?php
-class http{
+class ws{
     private $_host;
     private $_port;
     protected  $http;
     public function __construct($host,$port){
         $this->_host = $host;
         $this->_port = $port;
-        $this->http = new swoole_http_server($this->_host,$this->_port);
-        $this->http->set([
+        $this->ws = new swoole_websocket_server($this->_host,$this->_port);
+        $this->ws->set([
             'enable_static_handler' => true,
             'document_root' => '/home/chen/www/thinkphp5/public/static/',
             'worker_num' => 2,
             'task_worker_num' => 2,
         ]);
-        $this->http->on('WorkerStart',[$this,'workStart']);
-        $this->http->on('request',[$this,'request']);
-        $this->http->on('task',[$this,'task']);
-        $this->http->on('finish',[$this,'finish']);
-        $this->http->start();
+
+        $this->ws->on('open',[$this,'open']);
+        $this->ws->on('message',[$this,'message']);
+        $this->ws->on('WorkerStart',[$this,'workStart']);
+        $this->ws->on('request',[$this,'request']);
+        $this->ws->on('task',[$this,'task']);
+        $this->ws->on('finish',[$this,'finish']);
+        $this->ws->start();
     }
 
 
@@ -48,6 +51,13 @@ class http{
             }
         }
 
+        $_FILES = [];
+        if(isset($request->files)){
+            foreach($request->files as $k => $v){
+                $_FILES[$k] = $v;
+            }
+        }
+
         $_POST = [];
         if(isset($request->post)){
             foreach($request->post as $k => $v){
@@ -55,7 +65,7 @@ class http{
             }
         }
 
-        $_POST['http_server'] = $this->http;
+        $_POST['http_server'] = $this->ws;
 
         ob_start();
         // 执行应用并响应
@@ -69,11 +79,11 @@ class http{
 
 
     public function task($server,$task_id,$worker_id,$data){
-         $task = new  app\common\lib\Task();
-         //实现抛送不同的异步任务
-         $method = $data['method'];
-         $result = $task->$method($data['data']['phone_num'],$data['data']['code']);
-         return $result;
+        $task = new  app\common\lib\Task();
+        //实现抛送不同的异步任务
+        $method = $data['method'];
+        $result = $task->$method($data['data']['phone_num'],$data['data']['code']);
+        return $result;
     }
 
 
@@ -87,7 +97,17 @@ class http{
         echo "taskId:{$task_id}\n";
         echo "finish-data-success:{$data}";
     }
+
+    public  function open($server,$request){
+        echo "server: connect success!";
+    }
+
+    public  function message($server,$frame){
+        //获取唯一标示符
+        $fd = $frame->fd;
+        $username = $frame->data;
+    }
 }
 
 
-$http = new http('0.0.0.0',80);
+$http = new ws('0.0.0.0',80);

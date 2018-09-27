@@ -11,6 +11,7 @@ class Login{
     public function login(){
         $phone_number = request()->post('phone_num');
         $code = request()->post('code');
+
         try{
             $redis = Predis::getInstance();
         }catch(\Exception $e){

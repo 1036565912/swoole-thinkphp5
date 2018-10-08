@@ -10,7 +10,7 @@
     <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
     <link rel="stylesheet" href="./css/font.css">
     <link rel="stylesheet" href="./css/xadmin.css">
-    <script type="text/javascript" src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript" src="/js/jquery-3.3.1.min.js"></script>
     <script type="text/javascript" src="./lib/layui/layui.js" charset="utf-8"></script>
     <script type="text/javascript" src="./js/xadmin.js"></script>
     <!--引入CSS-->
@@ -45,6 +45,16 @@
               </select>
             </div>
           </div>
+
+          <div class="layui-form-item layui-form-text">
+            <label for="desc" class="layui-form-label">
+              比赛时间
+            </label>
+            <div class="layui-input-block">
+              <input type="text" placeholder="请输入内容" id="time" name="time" class="layui-input" />
+            </div>
+          </div>
+
           <div class="layui-form-item">
             <label for="username" class="layui-form-label">
               <span class="x-red">*</span>球队
@@ -124,7 +134,6 @@
             var $li = $(
                 '<div id="' + file.id + '" class="file-item thumbnail">' +
                 '<img>' +
-                '<div class="info">' + file.name + '</div>' +
                 '</div>'
                 ),
                 $img = $li.find('img');
@@ -162,8 +171,9 @@
         });
 
         // 文件上传成功，给item添加成功class, 用样式标记上传成功。
-        uploader.on( 'uploadSuccess', function( file ) {
+        uploader.on( 'uploadSuccess', function( file , response ) {
             $( '#'+file.id ).addClass('upload-state-done');
+            $('#uploader-demo').append('<input type="hidden" name="img" value="' + response.data.img_path +'" />');
         });
 
         // 文件上传失败，显示上传出错。
@@ -182,6 +192,37 @@
         // 完成上传完了，成功或者失败，先删除进度条。
         uploader.on( 'uploadComplete', function( file ) {
             $( '#'+file.id ).find('.progress').remove();
+        });
+
+
+        //表单提交
+        $('#submit-btn').click(function(event){
+            event.preventDefault();
+            var formdata = {
+                type: $('#type').val(),
+                team_id : $('#team_id').val(),
+                content : $('#content').val(),
+                img : $('input[type="hidden"][name="img"]').val(),
+                time : $('#time').val(),
+
+            };
+            //ajax异步上传
+            $.ajax({
+                url  : 'http://swoole.com/admin/live/push',
+                type : 'post',
+                data : formdata,
+                dataType : 'JSON',
+                async : true,
+                success : function (data){
+                    if(data.status == 200){
+                        alert(data.msg);
+                        window.location.reload();
+                    }else{
+                        alert(data.msg);
+                    }
+                }
+
+            });
         });
 
     </script>

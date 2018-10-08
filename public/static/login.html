@@ -126,6 +126,7 @@
 					        //登录成功
 							$.cookie('login_status','true',{expires: data.data.cookie_life_time,path: data.data.path});
 							$.cookie('username',data.data.username);
+							$.cookie('user_id',1);
 							window.location.href = 'http://swoole.com/index.html';
 						}else{
 					        //登录失败

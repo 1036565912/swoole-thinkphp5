@@ -721,14 +721,14 @@ class Request
      */
     public function post($name = '', $default = null, $filter = '')
     {
-        if (empty($this->post)) {
+        //if (empty($this->post)) {
             $content = $this->input;
             if (empty($_POST) && false !== strpos($this->contentType(), 'application/json')) {
                 $this->post = (array) json_decode($content, true);
             } else {
                 $this->post = $_POST;
             }
-        }
+        //}
 
         if (is_array($name)) {
             $this->param       = [];
@@ -899,9 +899,9 @@ class Request
      */
     public function file($name = '')
     {
-        if (empty($this->file)) {
+        //if (empty($this->file)) {
             $this->file = isset($_FILES) ? $_FILES : [];
-        }
+        //}
 
         if (is_array($name)) {
             return $this->file = array_merge($this->file, $name);

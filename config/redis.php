@@ -14,4 +14,6 @@ return [
     'prefix' => 'sms_',
     'timeOut' => 5,
 
+    //定义一个资源连接名称
+    'live_platform_relations' => 'live_platform_relations',
 ];

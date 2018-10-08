@@ -10,7 +10,9 @@
 return [
     //返回状态代码定义
     'status' => [
-        'error' => 0,
-        'success' => 1,
-    ]
+        'error' => 500,
+        'success' => 200,
+    ],
+    'upload_path' => dirname(APP_PATH).DIRECTORY_SEPARATOR.'public'.DIRECTORY_SEPARATOR.'static'.DIRECTORY_SEPARATOR,
+    'APP_URL' => 'http://swoole.com',
 ];

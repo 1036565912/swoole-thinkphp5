@@ -40,4 +40,44 @@ class Predis{
         $result = $this->redis->get($sms_phone);
         return $result;
     }
+
+//    /**
+//     * 添加数据到集合中
+//     * @param $key
+//     * @param $value
+//     * @return int
+//     */
+//    public function sAdd($key,$value){
+//        $result = $this->redis->sAdd($key,$value);
+//        return $result;
+//
+//    }
+//
+//
+//    public function sRem($key,$value){
+//        $result = $this->redis->sRem($key,$value);
+//        return $result;
+//
+//    }
+//
+//    public function sMembers($key){
+//        $result = $this->redis->sMembers($key);
+//        return $result;
+//    }
+
+    /**
+     * 定义魔术方法来实现多种方法封装
+     * @param $name
+     * @param $argument
+     */
+    public function __call($name,$argument){
+         if(count($argument) == 1){
+             //一个参数
+             return $this->redis->$name($argument[0]);
+         }
+         if(count($argument) == 2){
+             //两个参数
+             return $this->redis->$name($argument[0],$argument[1]);
+         }
+    }
 }

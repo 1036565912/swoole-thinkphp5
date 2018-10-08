@@ -11,10 +11,10 @@ namespace  app\common\lib;
 use app\common\lib\ali\Sms;
 
 class Task{
-    public function smsSend($phone_num,$code){
+    public function smsSend($server,$data){
 
         try{
-            $response = Sms::send($phone_num,$code);
+            $response = Sms::send($data['phone_num'],$data['code']);
         }catch (\Exception $e){
             //如果发送短信出现问题的话，则进行短信日志错误调试
             echo   $e->getMessage();
@@ -24,5 +24,22 @@ class Task{
         }else{
             return false;
         }
+    }
+
+
+    /** tip: 测试发现 worker进程 常驻变量无法给task进程使用  这里只能使用参数传递方式来进行数据交互*/
+    public function pushLive($server,$data){
+        $relations = Predis::getInstance()->sMembers(config('redis.live_platform_relations'));
+        foreach($relations as $fd){
+            $server->push($fd,json_encode($data)); //通过唯一识别号来进行推送
+        }
+        return true;
+    }
+
+    public function chart($server,$data){
+        foreach($server->ports[1]->connections as $fd){
+            $server->push($fd,json_encode($data));
+        }
+        return true;
     }
 }

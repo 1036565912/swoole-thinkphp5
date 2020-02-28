@@ -33,8 +33,8 @@ class Sms{
         $security = false;
 
         // fixme 必填: 请参阅 https://ak-console.aliyun.com/ 取得您的AK信息
-        $accessKeyId = "LTAIrDIRrLvD55Cd";
-        $accessKeySecret = "PuGDBFAHNSRx7rUWiMFSYOeiKbXoCz";
+        $accessKeyId = "LTAIdsdsrDfdfdIRrLdsadsadsavD55Cd";
+        $accessKeySecret = "PuGDBFASAADFGHNSRx7fdrUWdsdsadsaiMFSYOeiKbXoCz";
 
         // fixme 必填: 短信接收号码
         $params["PhoneNumbers"] = $phoneNumber;
